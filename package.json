@@ -1,6 +1,6 @@
 {
   "name": "laralog",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Laravel-like logging for AdonisJS",
   "keywords": [
     "laravel",
