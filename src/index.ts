@@ -20,9 +20,9 @@ const logToFile = async (exception: Error | unknown) => {
   const logChannel = process.env.LOG_CHANNEL || "stack";
   let logFile = "";
   if (logChannel === "stack") {
-    logFile = `logs/adonis-${DateTime.now().toFormat("yyyy-MM-dd")}.log`;
+    logFile = `logs/laralog-${DateTime.now().toFormat("yyyy-MM-dd")}.log`;
   } else {
-    logFile = `logs/adonis.log`;
+    logFile = `logs/laralog.log`;
   }
 
   // check if file exists
