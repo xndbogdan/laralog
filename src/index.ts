@@ -1,15 +1,23 @@
 import { DateTime } from "luxon";
 import * as fs from "node:fs";
 
-const generateLogLine = (exception: Error | unknown) => {
+type LogType = "info" | "error" | "warning" | "debug" | null | undefined;
+
+const generateLogLine = (exception: Error | unknown, logType?: LogType) => {
   const timestamp = DateTime.now().toFormat("yyyy-MM-dd HH:mm:ss");
   if (exception instanceof Error) {
-    return `[${timestamp}] ${exception.message}` + "\n";
+    if (!logType) {
+      return `[${timestamp}] ${exception.message}` + "\n";
+    }
+    return `[${timestamp}] ${logType}: ${exception.message}` + "\n";
   }
-  return `[${timestamp}] ${exception}` + "\n";
+  if (!logType) {
+    return `[${timestamp}] ${exception}` + "\n";
+  }
+  return `[${timestamp}] ${logType}: ${exception}` + "\n";
 };
-
-const logToFile = async (exception: Error | unknown) => {
+// new code
+const log = async (exception: Error | unknown, logType?: LogType) => {
   // Check if logs folder exists if not create it
   const logsDir = "logs";
   if (!fs.existsSync(logsDir)) {
@@ -31,7 +39,31 @@ const logToFile = async (exception: Error | unknown) => {
   }
 
   // write to file
-  fs.writeFileSync(logFile, generateLogLine(exception), { flag: "a" });
+  fs.writeFileSync(logFile, generateLogLine(exception, logType), { flag: "a" });
 };
 
-export { logToFile };
+const debug = async (exception: Error | unknown) => {
+  log(exception, "debug");
+}
+
+const info = async (exception: Error | unknown) => {
+  log(exception, "info");
+}
+
+const error = async (exception: Error | unknown) => {
+  log(exception, "error");
+}
+
+const warning = async (exception: Error | unknown) => {
+  log(exception, "warning");
+}
+
+/**
+ * @deprecated Use `log` instead. Will be removed by next release.
+ */
+const logToFile = async (exception: Error | unknown, logType?: LogType) => {
+  console.warn("logToFile is deprecated. Use `log` instead.");
+  await log(exception, logType);
+};
+
+export { log, LogType, debug, info, error, warning, logToFile };
